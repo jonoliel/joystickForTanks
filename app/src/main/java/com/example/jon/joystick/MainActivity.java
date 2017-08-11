@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
 
                 try {
                     thread.start();
-                    Thread.currentThread().sleep(200);
+                    Thread.currentThread().sleep(1000);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -157,14 +157,24 @@ public class MainActivity extends AppCompatActivity {
                                 do {
                                     receiveData = new byte[1024];
                                     client_socket.receive(receivePacket);
-                                    //final String temp = new String(receivePacket.getData());
-                                    //MainActivity.this.runOnUiThread(new Runnable() {
-                                    //   @Override
-                                    //  public void run() {
-                                    //     angle_left.setText(temp);
-                                    // }
-                                    //});
+                                    final String temp = new String(receivePacket.getData()).substring(0,20);
+                                    MainActivity.this.runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            strength_right.setText(temp);
+                                        }
+                                    });
 
+                                    if (new String(receivePacket.getData()).substring(0,4).equals("reco")) {
+                                        final String newIp = getIp(new String(receivePacket.getData()).substring(5, 25));
+                                        IPAddress = InetAddress.getByName(newIp);
+                                        MainActivity.this.runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                strength_right.setText(newIp);
+                                            }
+                                        });
+                                    }
 
                                 } while ( !(new String(receivePacket.getData()).substring(0,4).equals("exit")));
                                 MainActivity.this.runOnUiThread(new Runnable() {
@@ -172,6 +182,8 @@ public class MainActivity extends AppCompatActivity {
                                     public void run() {
                                         bt1.setEnabled(true);
                                         bt2.setEnabled(false);
+                                        serverIp.setEnabled(true);
+                                        nameText.setEnabled(true);
                                     }
                                 });
                                 client_socket.close();
@@ -292,7 +304,7 @@ public class MainActivity extends AppCompatActivity {
         send_data = temp.getBytes();
         DatagramPacket send_packet = new DatagramPacket(send_data,temp.length(), IPAddress, 4000);
         client_socket.send(send_packet);
-        client_socket.setSoTimeout(100);
+        client_socket.setSoTimeout(800);
         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
         try {
             client_socket.receive(receivePacket);
@@ -302,6 +314,20 @@ public class MainActivity extends AppCompatActivity {
             client_socket.close();
         }
 
+
+    }
+    public String getIp(String badIp) {
+        int count = 0;
+        int endstring = 0;
+        for (int i = 0; i< 16; i++) {
+            if (badIp.charAt(i) == '.')
+                count++;
+            if (count == 4) {
+                endstring = i;
+                break;
+            }
+        }
+        return badIp.substring(0,endstring);
 
     }
 

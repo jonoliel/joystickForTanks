@@ -17,7 +17,7 @@
         android:layout_marginRight="67dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="192.168.1.11"
+        android:text="192.168.1.6"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toRightOf="@+id/button"
